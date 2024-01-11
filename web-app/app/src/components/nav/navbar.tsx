@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { useLocation } from "react-router-dom";
 import {
   IconButton,
   Avatar,
@@ -43,7 +44,7 @@ interface LinkItemProps {
 }
 const LinkItems: Array<LinkItemProps> = [
   { name: "Home", icon: FiHome, path: "/" },
-  { name: "Example", icon: FiDisc, path: "/example" },
+  { name: "Patients", icon: FiDisc, path: "/patients" },
   { name: "Settings", icon: FiSettings, path: "/settings" },
 ];
 
@@ -56,30 +57,39 @@ export default function Navbar({
   signOut: any;
   user: CognitoUserAmplify | undefined;
 }) {
+  const location = useLocation();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
-      <SidebarContent
-        onClose={() => onClose}
-        display={{ base: "none", md: "block" }}
-      />
-      <Drawer
-        autoFocus={false}
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        returnFocusOnClose={false}
-        onOverlayClick={onClose}
-        size="full"
-      >
-        <DrawerContent>
-          <SidebarContent onClose={onClose} />
-        </DrawerContent>
-      </Drawer>
-      <MobileNav onOpen={onOpen} signOut={signOut} user={user} />
-      <Box ml={{ base: 0, md: 60 }} p="4">
-        {children}
-      </Box>
+      {location.pathname === "/auth" ? (
+        children
+      ) : (
+        <>
+          <SidebarContent
+            onClose={() => onClose}
+            display={{ base: "none", md: "block" }}
+          />
+          <Drawer
+            autoFocus={false}
+            isOpen={isOpen}
+            placement="left"
+            onClose={onClose}
+            returnFocusOnClose={false}
+            onOverlayClick={onClose}
+            size="full"
+          >
+            <DrawerContent>
+              <SidebarContent onClose={onClose} />
+            </DrawerContent>
+          </Drawer>
+
+          <MobileNav onOpen={onOpen} signOut={signOut} user={user} />
+          <Box ml={{ base: 0, md: 60 }} p="4">
+            {children}
+          </Box>
+        </>
+      )}
     </Box>
   );
 }
@@ -260,8 +270,8 @@ const MobileNav = ({ onOpen, signOut, user, ...rest }: MobileProps) => {
               <NavLink to="/">
                 <MenuItem>Home</MenuItem>
               </NavLink>
-              <NavLink to="/example">
-                <MenuItem>Example</MenuItem>
+              <NavLink to="/patients">
+                <MenuItem>Patients</MenuItem>
               </NavLink>
               <NavLink to="/settings">
                 <MenuItem>Settings</MenuItem>

@@ -1,10 +1,10 @@
 import { ModelStatic, Sequelize } from "sequelize";
-import { ExampleModel } from "./example_model";
+import { UserModel } from "./user_model";
 import { getEnvVarOrFail } from "../shared/config";
 
 export type DB = {
   sequelize: Sequelize;
-  exampleModel: ModelStatic<ExampleModel>;
+  userModel: ModelStatic<UserModel>;
 };
 
 let db: DB | undefined;
@@ -16,8 +16,10 @@ export const getDB = (): DB => {
 async function initDB(): Promise<void> {
   const sqlDBCreds = getEnvVarOrFail("DB_CREDS");
 
+  console.log(sqlDBCreds)
   // get database creds
   var dbCreds = JSON.parse(sqlDBCreds);
+  console.log(dbCreds)
   console.log("[server]: connecting to db...");
   var sequelize = new Sequelize(
     dbCreds.dbname,
@@ -30,7 +32,7 @@ async function initDB(): Promise<void> {
     }
   );
   // define all models
-  let exampleModel = ExampleModel.define(sequelize);
+  let userModel = UserModel.define(sequelize);
 
   try {
     await sequelize.authenticate();
@@ -44,7 +46,7 @@ async function initDB(): Promise<void> {
   }
   db = {
     sequelize,
-    exampleModel,
+    userModel,
   };
 }
 

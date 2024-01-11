@@ -27,4 +27,8 @@ export class Config {
   static getMetriportWebhookKey(): string {
     return getEnvVarOrFail("METRIPORT_WEBHOOK_KEY");
   }
+
+  static getJWTKey(): string {
+    return getEnvVarOrFail("JWT_SECRET_KEY")
+  }
 }
