@@ -107,6 +107,7 @@ export default function Patients({ api }: { api: MetriportMedicalApi }) {
                 <Th>First</Th>
                 <Th>Last</Th>
                 <Th>DOB</Th>
+                <Th>Gender</Th>
                 <Box position={"sticky"} width="100" right={0} background={bgColor}>
                   <Th borderColor={bgColor}></Th>
                   <Th borderColor={bgColor}></Th>
@@ -182,6 +183,10 @@ const PatientRow = ({
   onOpenFHIRResources: (patient: PatientDTO) => void;
   showExternalId?: boolean;
 }) => {
+  const getGenderName = (value: string) => {
+    return value === 'M' ? 'Male' : 'Female'
+  }
+
   return (
     <Tr>
       <Td className="ph-no-capture">{patient.id}</Td>
@@ -189,6 +194,7 @@ const PatientRow = ({
       <Td className="ph-no-capture">{patient.firstName}</Td>
       <Td className="ph-no-capture">{patient.lastName}</Td>
       <Td className="ph-no-capture">{patient.dob}</Td>
+      <Td className="ph-no-capture">{getGenderName(patient.genderAtBirth)}</Td>
       <Box
         position={"sticky"}
         width="100"

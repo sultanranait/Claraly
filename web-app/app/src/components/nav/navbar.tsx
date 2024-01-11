@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { Fragment, ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   IconButton,
@@ -42,9 +42,12 @@ interface LinkItemProps {
   icon: IconType;
   path: string;
 }
-const LinkItems: Array<LinkItemProps> = [
+const TopLinkItems: Array<LinkItemProps> = [
   { name: "Home", icon: FiHome, path: "/" },
   { name: "Patients", icon: FiDisc, path: "/patients" },
+];
+
+const BottomLinkItems: Array<LinkItemProps> = [
   { name: "Settings", icon: FiSettings, path: "/settings" },
 ];
 
@@ -57,14 +60,14 @@ export default function Navbar({
 }) {
   const location = useLocation();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { logout } = useAuth()
-  const navigate = useNavigate()
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const signOut = () => {
-    logout()
-    navigate("/auth")
-  }
-  
+    logout();
+    navigate("/auth");
+  };
+
   return (
     <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
       {location.pathname === "/auth" ? (
@@ -119,11 +122,23 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         <Image padding={"5"} src={"logo192.png"} alt="logo" width={"100px"} />
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
-      {LinkItems.map((link) => (
-        <NavItem path={link.path} key={link.name} icon={link.icon}>
-          {link.name}
-        </NavItem>
-      ))}
+
+      <Flex direction="column" justifyContent="space-between" h={"88%"}>
+        <VStack alignItems="start">
+          {TopLinkItems.map((link) => (
+            <NavItem path={link.path} key={link.name} icon={link.icon}>
+              {link.name}
+            </NavItem>
+          ))}
+        </VStack>
+        <VStack alignItems="start">
+          {BottomLinkItems.map((link) => (
+            <NavItem path={link.path} key={link.name} icon={link.icon}>
+              {link.name}
+            </NavItem>
+          ))}
+        </VStack>
+      </Flex>
     </Box>
   );
 };
@@ -202,7 +217,7 @@ interface MobileProps extends FlexProps {
   user: undefined;
 }
 const MobileNav = ({ onOpen, signOut, user, ...rest }: MobileProps) => {
-  const { email } = useAuth()
+  const { email } = useAuth();
 
   return (
     <Flex
@@ -248,7 +263,7 @@ const MobileNav = ({ onOpen, signOut, user, ...rest }: MobileProps) => {
               transition="all 0.3s"
               _focus={{ boxShadow: "none" }}
             >
-              <HStack>
+              <HStack alignItems="center">
                 <Avatar
                   size={"sm"}
                   src={
@@ -261,9 +276,7 @@ const MobileNav = ({ onOpen, signOut, user, ...rest }: MobileProps) => {
                   spacing="1px"
                   ml="2"
                 >
-                  <Text fontSize="sm">
-                    {email ?? ""}
-                  </Text>
+                  <Text fontSize="sm">{email ?? ""}</Text>
                 </VStack>
                 <Box display={{ base: "none", md: "flex" }}>
                   <FiChevronDown />
