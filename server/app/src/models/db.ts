@@ -1,10 +1,10 @@
 import { ModelStatic, Sequelize } from "sequelize";
-import { ExampleModel } from "./example_model";
+import { UserModel } from "./user_model";
 import { getEnvVarOrFail } from "../shared/config";
 
 export type DB = {
   sequelize: Sequelize;
-  exampleModel: ModelStatic<ExampleModel>;
+  userModel: ModelStatic<UserModel>;
 };
 
 let db: DB | undefined;
@@ -30,7 +30,7 @@ async function initDB(): Promise<void> {
     }
   );
   // define all models
-  let exampleModel = ExampleModel.define(sequelize);
+  let userModel = UserModel.define(sequelize);
 
   try {
     await sequelize.authenticate();
@@ -44,7 +44,7 @@ async function initDB(): Promise<void> {
   }
   db = {
     sequelize,
-    exampleModel,
+    userModel,
   };
 }
 

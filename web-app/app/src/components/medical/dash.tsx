@@ -56,7 +56,7 @@ export default function MedicalDash({ api }: MetriportMedicalApiProps) {
       <Skeleton isLoaded={medicalState.isLoaded}>
         <OrganizationManager api={api}></OrganizationManager>
         {medicalState.store?.organization ? <Facilities api={api}></Facilities> : null}
-        {medicalState.selectedFacility ? <Patients api={api}></Patients> : null}
+        {/* {medicalState.selectedFacility ? <Patients api={api}></Patients> : null} */}
       </Skeleton>
     </Box>
   );

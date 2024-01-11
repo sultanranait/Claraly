@@ -1,4 +1,5 @@
 import { AddIcon, EditIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom"
 import {
   Box,
   Button,
@@ -32,6 +33,7 @@ import useMetriportToast from "../../shared/toast";
 import FacilityForm from "./form";
 
 export default function Facilities({ api }: { api: MetriportMedicalApi }) {
+  const navigate = useNavigate()
   const bgColor = useColorModeValue("white", "gray.700");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [gettingPatients, setGettingPatients] = useState<boolean>(false);
@@ -55,6 +57,7 @@ export default function Facilities({ api }: { api: MetriportMedicalApi }) {
           selectedFacility: facility,
         },
       });
+      navigate("/patients")
     } catch (err) {
       capture.error(err, {
         extra: { facilityId: facility.id, context: `facility.getPatients` },

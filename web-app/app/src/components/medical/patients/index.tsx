@@ -40,11 +40,6 @@ export default function Patients({ api }: { api: MetriportMedicalApi }) {
   const [patientToEdit, setPatientToEdit] = useState<string | undefined>(undefined);
   const { medicalState } = useContext(MedicalAppStateContext);
 
-  const selectedFacility = medicalState.selectedFacility;
-  if (!selectedFacility) {
-    throw new Error("Programming error: no facility has been selected");
-  }
-
   function onEdit(patient: PatientDTO): void {
     Analytics.emit(Actions.open, Features.form, { type: Features.patient });
     setPatientToEdit(patient.id);
@@ -94,7 +89,7 @@ export default function Patients({ api }: { api: MetriportMedicalApi }) {
         <HStack>
           <Icon as={BsPeopleFill} />
           <Heading as="h4" size="md">
-            Patients at {selectedFacility.name}
+            Patients at {medicalState?.selectedFacility?.name}
           </Heading>
         </HStack>
         <Spacer />
@@ -112,6 +107,7 @@ export default function Patients({ api }: { api: MetriportMedicalApi }) {
                 <Th>First</Th>
                 <Th>Last</Th>
                 <Th>DOB</Th>
+                <Th>Gender</Th>
                 <Box position={"sticky"} width="100" right={0} background={bgColor}>
                   <Th borderColor={bgColor}></Th>
                   <Th borderColor={bgColor}></Th>
@@ -119,10 +115,10 @@ export default function Patients({ api }: { api: MetriportMedicalApi }) {
               </Tr>
             </Thead>
             <Tbody>
-              {patients && selectedFacility.id ? (
+              {patients && medicalState?.selectedFacility?.id ? (
                 Object.keys(patients).map((id, i) => {
                   const patient = patients[id];
-                  if (patient.facilityIds.includes(selectedFacility.id)) {
+                  if (patient.facilityIds.includes(medicalState?.selectedFacility?.id ?? "")) {
                     return (
                       <PatientRow
                         key={i}
@@ -151,7 +147,7 @@ export default function Patients({ api }: { api: MetriportMedicalApi }) {
         <PatientDocuments
           api={api}
           patient={patientForDocuments}
-          facilityId={selectedFacility.id}
+          facilityId={medicalState?.selectedFacility?.id ?? ""}
           placement="right"
           onClose={onCloseDocuments}
           size={"xl"}
@@ -187,6 +183,10 @@ const PatientRow = ({
   onOpenFHIRResources: (patient: PatientDTO) => void;
   showExternalId?: boolean;
 }) => {
+  const getGenderName = (value: string) => {
+    return value === 'M' ? 'Male' : 'Female'
+  }
+
   return (
     <Tr>
       <Td className="ph-no-capture">{patient.id}</Td>
@@ -194,6 +194,7 @@ const PatientRow = ({
       <Td className="ph-no-capture">{patient.firstName}</Td>
       <Td className="ph-no-capture">{patient.lastName}</Td>
       <Td className="ph-no-capture">{patient.dob}</Td>
+      <Td className="ph-no-capture">{getGenderName(patient.genderAtBirth)}</Td>
       <Box
         position={"sticky"}
         width="100"

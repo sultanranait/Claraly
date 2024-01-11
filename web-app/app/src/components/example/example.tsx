@@ -16,7 +16,6 @@ import {
 import { Field, Form, Formik } from 'formik';
 import { useEffect, useState } from 'react';
 import { api } from '../shared/api';
-import { fetchUserToken } from '../shared/util';
 
 export default function Example({}: {}) {
   const [isLoadingToken, setIsLoadingToken] = useState(true);
@@ -27,17 +26,7 @@ export default function Example({}: {}) {
   class FormValues {
     value: string = '';
   }
-
-  // ensure user token is loaded into the api
-  useEffect(() => {
-    fetchUserToken()
-      .then(token => {
-        setIsLoadingToken(false);
-        api.defaults.headers.common['Authorization'] = token;
-      })
-      .catch(err => console.log(err));
-  }, []);
-
+  
   // submits the value to the backend
   async function submitValue(value: string) {
     await api.post('/example', null, { params: { value } });

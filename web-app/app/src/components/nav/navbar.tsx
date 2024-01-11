@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+import { Fragment, ReactNode } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   IconButton,
   Avatar,
@@ -34,52 +35,69 @@ import { IconType } from "react-icons";
 import { ReactText } from "react";
 import { ColorModeSwitcher } from "../../ColorModeSwitcher";
 import { NavLink } from "react-router-dom";
-import { CognitoUserAmplify } from "@aws-amplify/ui";
+import { useAuth } from "../hooks/auth-context";
 
 interface LinkItemProps {
   name: string;
   icon: IconType;
   path: string;
 }
-const LinkItems: Array<LinkItemProps> = [
+const TopLinkItems: Array<LinkItemProps> = [
   { name: "Home", icon: FiHome, path: "/" },
-  { name: "Example", icon: FiDisc, path: "/example" },
+  { name: "Patients", icon: FiDisc, path: "/patients" },
+];
+
+const BottomLinkItems: Array<LinkItemProps> = [
   { name: "Settings", icon: FiSettings, path: "/settings" },
 ];
 
 export default function Navbar({
   children,
-  signOut,
   user,
 }: {
   children: ReactNode;
-  signOut: any;
-  user: CognitoUserAmplify | undefined;
+  user: undefined;
 }) {
+  const location = useLocation();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const signOut = () => {
+    logout();
+    navigate("/auth");
+  };
+
   return (
     <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
-      <SidebarContent
-        onClose={() => onClose}
-        display={{ base: "none", md: "block" }}
-      />
-      <Drawer
-        autoFocus={false}
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        returnFocusOnClose={false}
-        onOverlayClick={onClose}
-        size="full"
-      >
-        <DrawerContent>
-          <SidebarContent onClose={onClose} />
-        </DrawerContent>
-      </Drawer>
-      <MobileNav onOpen={onOpen} signOut={signOut} user={user} />
-      <Box ml={{ base: 0, md: 60 }} p="4">
-        {children}
-      </Box>
+      {location.pathname === "/auth" ? (
+        children
+      ) : (
+        <>
+          <SidebarContent
+            onClose={() => onClose}
+            display={{ base: "none", md: "block" }}
+          />
+          <Drawer
+            autoFocus={false}
+            isOpen={isOpen}
+            placement="left"
+            onClose={onClose}
+            returnFocusOnClose={false}
+            onOverlayClick={onClose}
+            size="full"
+          >
+            <DrawerContent>
+              <SidebarContent onClose={onClose} />
+            </DrawerContent>
+          </Drawer>
+
+          <MobileNav onOpen={onOpen} signOut={signOut} user={user} />
+          <Box ml={{ base: 0, md: 60 }} p="4">
+            {children}
+          </Box>
+        </>
+      )}
     </Box>
   );
 }
@@ -104,11 +122,23 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         <Image padding={"5"} src={"logo192.png"} alt="logo" width={"100px"} />
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
-      {LinkItems.map((link) => (
-        <NavItem path={link.path} key={link.name} icon={link.icon}>
-          {link.name}
-        </NavItem>
-      ))}
+
+      <Flex direction="column" justifyContent="space-between" h={"88%"}>
+        <VStack alignItems="start">
+          {TopLinkItems.map((link) => (
+            <NavItem path={link.path} key={link.name} icon={link.icon}>
+              {link.name}
+            </NavItem>
+          ))}
+        </VStack>
+        <VStack alignItems="start">
+          {BottomLinkItems.map((link) => (
+            <NavItem path={link.path} key={link.name} icon={link.icon}>
+              {link.name}
+            </NavItem>
+          ))}
+        </VStack>
+      </Flex>
     </Box>
   );
 };
@@ -184,9 +214,11 @@ const NavItem = ({ path, icon, children, ...rest }: NavItemProps) => {
 interface MobileProps extends FlexProps {
   onOpen: () => void;
   signOut: any;
-  user: CognitoUserAmplify | undefined;
+  user: undefined;
 }
 const MobileNav = ({ onOpen, signOut, user, ...rest }: MobileProps) => {
+  const { email } = useAuth();
+
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -231,7 +263,7 @@ const MobileNav = ({ onOpen, signOut, user, ...rest }: MobileProps) => {
               transition="all 0.3s"
               _focus={{ boxShadow: "none" }}
             >
-              <HStack>
+              <HStack alignItems="center">
                 <Avatar
                   size={"sm"}
                   src={
@@ -244,9 +276,7 @@ const MobileNav = ({ onOpen, signOut, user, ...rest }: MobileProps) => {
                   spacing="1px"
                   ml="2"
                 >
-                  <Text fontSize="sm">
-                    {user != undefined ? user?.attributes?.email : ""}
-                  </Text>
+                  <Text fontSize="sm">{email ?? ""}</Text>
                 </VStack>
                 <Box display={{ base: "none", md: "flex" }}>
                   <FiChevronDown />
@@ -260,8 +290,8 @@ const MobileNav = ({ onOpen, signOut, user, ...rest }: MobileProps) => {
               <NavLink to="/">
                 <MenuItem>Home</MenuItem>
               </NavLink>
-              <NavLink to="/example">
-                <MenuItem>Example</MenuItem>
+              <NavLink to="/patients">
+                <MenuItem>Patients</MenuItem>
               </NavLink>
               <NavLink to="/settings">
                 <MenuItem>Settings</MenuItem>
