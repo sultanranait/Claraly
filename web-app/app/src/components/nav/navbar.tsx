@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   IconButton,
   Avatar,
@@ -35,7 +35,7 @@ import { IconType } from "react-icons";
 import { ReactText } from "react";
 import { ColorModeSwitcher } from "../../ColorModeSwitcher";
 import { NavLink } from "react-router-dom";
-import { CognitoUserAmplify } from "@aws-amplify/ui";
+import { useAuth } from "../hooks/auth-context";
 
 interface LinkItemProps {
   name: string;
@@ -50,16 +50,21 @@ const LinkItems: Array<LinkItemProps> = [
 
 export default function Navbar({
   children,
-  signOut,
   user,
 }: {
   children: ReactNode;
-  signOut: any;
-  user: CognitoUserAmplify | undefined;
+  user: undefined;
 }) {
   const location = useLocation();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { logout } = useAuth()
+  const navigate = useNavigate()
 
+  const signOut = () => {
+    logout()
+    navigate("/auth")
+  }
+  
   return (
     <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
       {location.pathname === "/auth" ? (
@@ -194,9 +199,11 @@ const NavItem = ({ path, icon, children, ...rest }: NavItemProps) => {
 interface MobileProps extends FlexProps {
   onOpen: () => void;
   signOut: any;
-  user: CognitoUserAmplify | undefined;
+  user: undefined;
 }
 const MobileNav = ({ onOpen, signOut, user, ...rest }: MobileProps) => {
+  const { email } = useAuth()
+
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -255,7 +262,7 @@ const MobileNav = ({ onOpen, signOut, user, ...rest }: MobileProps) => {
                   ml="2"
                 >
                   <Text fontSize="sm">
-                    {user != undefined ? user?.attributes?.email : ""}
+                    {email ?? ""}
                   </Text>
                 </VStack>
                 <Box display={{ base: "none", md: "flex" }}>

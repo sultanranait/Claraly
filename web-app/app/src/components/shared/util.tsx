@@ -1,6 +1,3 @@
-import { CognitoUser } from "@aws-amplify/auth";
-import { CognitoUserAttribute, CognitoUserSession } from "amazon-cognito-identity-js";
-import { Auth } from "aws-amplify";
 import { capture } from "./capture";
 import { MedicalAppState } from "../contexts/medical/reducer";
 import Constants from "./constants";

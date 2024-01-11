@@ -3,14 +3,13 @@ import { ChakraProvider, theme } from "@chakra-ui/react";
 import Navbar from "./components/nav/navbar";
 import Settings from "./components/settings/settings";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import "@aws-amplify/ui-react/styles.css";
-// import Home from "./components/home/home";
 import Medical from "./components/medical";
 import Patients from "./components/medical/patients";
-// import { MetriportMedicalApi } from "./components/medical/client/metriport";
 import { MetriportMedicalApi } from "@metriport/api-sdk";
 import Auth from "./components/auth";
 import { MedicalAppStateProvider } from "./components/contexts/medical";
+import ProtectedRoute from "./components/shared/ProtectedRoute";
+import { AuthProvider } from "./components/hooks/auth-context";
 
 export const App = () => {
   const timeoutMillis = 29000;
@@ -36,20 +35,38 @@ export const App = () => {
     <main>
       <BrowserRouter>
         <ChakraProvider theme={theme}>
-          <MedicalAppStateProvider>
-            <Navbar
-              children={
-                <Routes>
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/" element={<Medical></Medical>} />
-                  <Route path="patients" element={<Patients api={metriportAPI}/>} />÷
-                  <Route path="settings" element={<Settings></Settings>} />
-                </Routes>
-              }
-              signOut={() => console.log("signOut")}
-              user={undefined}
-            />
-          </MedicalAppStateProvider>
+          <AuthProvider>
+            <MedicalAppStateProvider>
+              <Navbar
+                children={
+                  <Routes>
+                    <Route path="/auth" element={<Auth />} />
+                    <Route
+                      path="/"
+                      element={
+                        <ProtectedRoute>
+                          <Medical />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="patients"
+                      element={<ProtectedRoute><Patients api={metriportAPI} /></ProtectedRoute>}
+                    />
+                    <Route
+                      path="settings"
+                      element={
+                        <ProtectedRoute>
+                          <Settings />
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Routes>
+                }
+                user={undefined}
+              />
+            </MedicalAppStateProvider>
+          </AuthProvider>
         </ChakraProvider>
       </BrowserRouter>
     </main>
