@@ -16,10 +16,8 @@ export const getDB = (): DB => {
 async function initDB(): Promise<void> {
   const sqlDBCreds = getEnvVarOrFail("DB_CREDS");
 
-  console.log(sqlDBCreds)
   // get database creds
   var dbCreds = JSON.parse(sqlDBCreds);
-  console.log(dbCreds)
   console.log("[server]: connecting to db...");
   var sequelize = new Sequelize(
     dbCreds.dbname,

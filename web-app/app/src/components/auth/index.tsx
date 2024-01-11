@@ -39,13 +39,10 @@ const Auth = () => {
         values
       );
       if (isLogin) {
-        console.log("login");
-        console.log(data)
         login({ email: data?.email, token: data?.access_token, date: data?.date })
         navigate("/");
       } else {
         setIsLogin(true);
-        console.log("signup");
       }
     } catch (error) {
       console.log(error);

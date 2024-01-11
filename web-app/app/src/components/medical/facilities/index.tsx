@@ -57,7 +57,6 @@ export default function Facilities({ api }: { api: MetriportMedicalApi }) {
           selectedFacility: facility,
         },
       });
-      console.log(medicalState)
       navigate("/patients")
     } catch (err) {
       capture.error(err, {
